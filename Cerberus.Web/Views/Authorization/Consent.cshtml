@@ -1,0 +1,30 @@
+@model ConsentViewModel
+@{
+    ViewData["Title"] = "Authorize application";
+}
+<div class="card auth-card">
+    <div class="card-body">
+        <h1 class="h4 mb-3">Authorize @Model.Consent.ClientDisplayName</h1>
+        <p>
+            <strong>@Model.Consent.ClientDisplayName</strong> requests access to your account in the context of the organization
+            <strong>@Model.Consent.Organization.Name</strong>:
+        </p>
+        <ul class="scope-list">
+            @foreach (var scope in Model.Consent.Scopes)
+            {
+                <li><strong>@scope.DisplayName</strong>@(scope.Description is null ? "" : $" - {scope.Description}")</li>
+            }
+        </ul>
+        <form action="~/connect/authorize" method="post">
+            @Html.AntiForgeryToken()
+            @foreach (var parameter in Model.Parameters)
+            {
+                <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
+            }
+            <div class="d-flex gap-2">
+                <button type="submit" name="submit" value="accept" class="btn btn-primary flex-fill">Allow</button>
+                <button type="submit" name="submit" value="deny" class="btn btn-outline-secondary flex-fill">Deny</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+@model OrganizationHomeViewModel
+@{
+    ViewData["Title"] = Model.Organization.Name;
+}
+<partial name="_OrgNav" model="Model.Organization" />
+<h2 class="h5">Your permissions in this organization</h2>
+<ul>
+    @foreach (var permission in Model.Permissions.OrderBy(p => p))
+    {
+        <li><code>@permission</code></li>
+    }
+</ul>
+@if (Model.Permissions.Contains(PermissionCatalog.OrganizationSettingsManage))
+{
+    <form asp-action="Rename" asp-route-organizationId="@Model.Organization.Id" method="post" class="d-flex gap-2 col-md-6">
+        <input name="name" value="@Model.Organization.Name" class="form-control" />
+        <button class="btn btn-outline-primary">Rename</button>
+    </form>
+}

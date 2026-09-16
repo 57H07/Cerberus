@@ -1,0 +1,7 @@
+@{
+    var toast = TempData.Get<ToastMessage>(ToastMessage.TempDataKey);
+}
+@if (toast is not null)
+{
+    <div class="alert @(toast.Type == ToastType.Success ? "alert-success" : "alert-danger")" role="alert">@toast.Message</div>
+}

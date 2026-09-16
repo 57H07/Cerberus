@@ -1,0 +1,18 @@
+@model EndSessionViewModel
+@{
+    ViewData["Title"] = "Sign out";
+}
+<div class="card auth-card">
+    <div class="card-body">
+        <h1 class="h4 mb-3">Sign out</h1>
+        <p>Do you want to sign out from Cerberus?</p>
+        <form action="~/connect/endsession" method="post">
+            @Html.AntiForgeryToken()
+            @foreach (var parameter in Model.Parameters)
+            {
+                <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
+            }
+            <button type="submit" class="btn btn-primary w-100">Sign out</button>
+        </form>
+    </div>
+</div>

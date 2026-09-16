@@ -1,0 +1,11 @@
+@model AuditViewModel
+@{
+    var organization = (OrganizationDto)ViewData["Organization"]!;
+    ViewData["Title"] = "Audit - " + organization.Name;
+}
+<partial name="_OrgNav" model="organization" />
+<partial name="_AuditTable" model="Model.Page.Items" />
+@if (Model.Page.HasNext)
+{
+    <a asp-route-page="@(Model.Page.Page + 1)">Older entries</a>
+}

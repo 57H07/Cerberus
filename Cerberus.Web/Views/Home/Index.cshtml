@@ -1,0 +1,38 @@
+@using Cerberus.Domain.Authorization
+@model AdministrationAccessDto
+@{
+    ViewData["Title"] = "Home";
+    bool Has(string permission) => Model.PlatformPermissions.Contains(permission);
+}
+<h1>Cerberus</h1>
+
+@if (Model.PlatformPermissions.Count > 0)
+{
+    <h2 class="h4 mt-4">Platform administration</h2>
+    <div class="list-group mb-4">
+        @if (Has(PermissionCatalog.PlatformUsersManage)) { <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a> }
+        @if (Has(PermissionCatalog.PlatformOrganizationsManage)) { <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Organizations" asp-action="Index">Organizations</a> }
+        @if (Has(PermissionCatalog.PlatformClientsManage)) { <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Applications" asp-action="Index">Applications and OIDC clients</a> }
+        @if (Has(PermissionCatalog.PlatformScopesManage)) { <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Scopes" asp-action="Index">API scopes</a> }
+        @if (Has(PermissionCatalog.PlatformRolesManage)) { <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Roles" asp-action="Index">Platform roles</a> }
+        @if (Has(PermissionCatalog.PlatformAuditRead)) { <a class="list-group-item list-group-item-action" asp-area="Admin" asp-controller="Audit" asp-action="Index">Audit log</a> }
+    </div>
+}
+
+@if (Model.AdministrableOrganizations.Count > 0)
+{
+    <h2 class="h4 mt-4">Organization administration</h2>
+    <div class="list-group mb-4">
+        @foreach (var organization in Model.AdministrableOrganizations)
+        {
+            <a class="list-group-item list-group-item-action" asp-area="OrgAdmin" asp-controller="Organization" asp-action="Index" asp-route-organizationId="@organization.Id">
+                @organization.Name <small class="text-muted">(@organization.Slug)</small>
+            </a>
+        }
+    </div>
+}
+
+@if (Model.PlatformPermissions.Count == 0 && Model.AdministrableOrganizations.Count == 0)
+{
+    <p>You are signed in. You have no administration rights. Manage your sessions and consents from <a asp-controller="Account" asp-action="Manage">your account</a>.</p>
+}

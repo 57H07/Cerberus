@@ -1,0 +1,24 @@
+@model SelectOrganizationViewModel
+@{
+    ViewData["Title"] = "Choose an organization";
+}
+<div class="card auth-card">
+    <div class="card-body">
+        <h1 class="h4 mb-3">Choose an organization</h1>
+        <p>The application can be used with several of your organizations.</p>
+        <form action="~/connect/authorize" method="get">
+            @foreach (var parameter in Model.Parameters)
+            {
+                <input type="hidden" name="@parameter.Key" value="@parameter.Value" />
+            }
+            <div class="list-group mb-3">
+                @foreach (var organization in Model.Organizations)
+                {
+                    <button type="submit" name="organization" value="@organization.Slug" class="list-group-item list-group-item-action">
+                        @organization.Name <small class="text-muted">(@organization.Slug)</small>
+                    </button>
+                }
+            </div>
+        </form>
+    </div>
+</div>

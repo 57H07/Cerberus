@@ -1,0 +1,16 @@
+@using Microsoft.AspNetCore
+@using OpenIddict.Abstractions
+@{
+    ViewData["Title"] = "Error";
+    var response = Context.GetOpenIddictServerResponse();
+}
+<h1>Error @ViewData["StatusCode"]</h1>
+@if (response is not null)
+{
+    <p><strong>@response.Error</strong></p>
+    <p>@response.ErrorDescription</p>
+}
+else
+{
+    <p>The request could not be processed.</p>
+}

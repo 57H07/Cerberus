@@ -1,0 +1,83 @@
+@model MyAccountViewModel
+@{
+    ViewData["Title"] = "My account";
+}
+<h1>My account</h1>
+<dl class="row">
+    <dt class="col-sm-3">Name</dt><dd class="col-sm-9">@Model.Profile.FirstName @Model.Profile.LastName</dd>
+    <dt class="col-sm-3">Login</dt><dd class="col-sm-9">@Model.Profile.UserName</dd>
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">
+        @Model.Profile.Email
+        @if (Model.Profile.EmailConfirmed)
+        {
+            <span class="badge bg-success">confirmed</span>
+        }
+        else
+        {
+            <form asp-action="ResendConfirmation" method="post" class="d-inline">
+                <span class="badge bg-warning text-dark">not confirmed</span>
+                <button type="submit" class="btn btn-link btn-sm">Send confirmation email</button>
+            </form>
+        }
+    </dd>
+</dl>
+
+<h2 class="h4 mt-4">Organizations</h2>
+<ul>
+    @foreach (var membership in Model.Memberships)
+    {
+        <li>@membership.OrganizationName <small class="text-muted">(@membership.OrganizationSlug, @membership.Status)</small></li>
+    }
+</ul>
+
+<h2 class="h4 mt-4">Active sessions</h2>
+<table class="table table-sm">
+    <thead><tr><th>Started</th><th>Last activity</th><th>IP</th><th>Browser</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var session in Model.Sessions)
+        {
+            <tr>
+                <td>@session.CreatedAt.ToString("u")</td>
+                <td>@session.LastSeenAt.ToString("u")</td>
+                <td>@session.IpAddress</td>
+                <td class="text-truncate">@session.UserAgent</td>
+                <td>
+                    <form asp-action="RevokeSession" method="post">
+                        <input type="hidden" name="sessionId" value="@session.Id" />
+                        <button type="submit" class="btn btn-outline-danger btn-sm">@(session.Id == Model.CurrentSessionId ? "Sign out" : "Revoke")</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h2 class="h4 mt-4">Application consents</h2>
+@if (Model.Consents.Count == 0)
+{
+    <p class="text-muted">No consent given.</p>
+}
+else
+{
+    <table class="table table-sm">
+        <thead><tr><th>Application</th><th>Organization</th><th>Scopes</th><th>Granted</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var consent in Model.Consents)
+            {
+                <tr>
+                    <td>@consent.ClientDisplayName</td>
+                    <td>@consent.OrganizationName</td>
+                    <td>@string.Join(", ", consent.Scopes)</td>
+                    <td>@consent.GrantedAt.ToString("u")</td>
+                    <td>
+                        <form asp-action="RevokeConsent" method="post">
+                            <input type="hidden" name="consentId" value="@consent.Id" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Revoke</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

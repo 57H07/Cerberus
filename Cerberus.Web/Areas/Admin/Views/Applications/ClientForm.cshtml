@@ -1,0 +1,47 @@
+@model ClientFormViewModel
+@{
+    ViewData["Title"] = Model.Id is null ? "New OIDC client" : "Edit OIDC client";
+}
+<h1>@ViewData["Title"]</h1>
+<form method="post" class="col-md-8" asp-action="@(Model.Id is null ? "CreateClient" : "EditClient")" asp-route-id="@Model.Id">
+    <input type="hidden" asp-for="ApplicationId" />
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    @if (Model.Id is null)
+    {
+        <div class="mb-3"><label asp-for="ClientId" class="form-label"></label><input asp-for="ClientId" class="form-control" /><span asp-validation-for="ClientId" class="text-danger"></span></div>
+        <div class="mb-3">
+            <label asp-for="ClientType" class="form-label"></label>
+            <select asp-for="ClientType" class="form-select" asp-items="Html.GetEnumSelectList<ClientType>()"></select>
+            <div class="form-text">Confidential clients receive a secret shown once. PKCE is required for every client.</div>
+        </div>
+    }
+    else
+    {
+        <input type="hidden" asp-for="ClientId" />
+        <p>Client ID: <code>@Model.ClientId</code> (@Model.ClientType)</p>
+    }
+    <div class="mb-3"><label asp-for="DisplayName" class="form-label"></label><input asp-for="DisplayName" class="form-control" /><span asp-validation-for="DisplayName" class="text-danger"></span></div>
+    <div class="mb-3">
+        <label asp-for="RedirectUris" class="form-label"></label>
+        <textarea asp-for="RedirectUris" class="form-control" rows="3"></textarea>
+        <div class="form-text">Exact match only. HTTPS required except for loopback hosts. No wildcard, no fragment.</div>
+        <span asp-validation-for="RedirectUris" class="text-danger"></span>
+    </div>
+    <div class="mb-3"><label asp-for="PostLogoutRedirectUris" class="form-label"></label><textarea asp-for="PostLogoutRedirectUris" class="form-control" rows="2"></textarea></div>
+    <div class="mb-3">
+        <label asp-for="ConsentPolicy" class="form-label"></label>
+        <select asp-for="ConsentPolicy" class="form-select" asp-items="Html.GetEnumSelectList<ConsentPolicy>()"></select>
+    </div>
+    <div class="mb-3"><label asp-for="ConsentLifetimeDays" class="form-label"></label><input asp-for="ConsentLifetimeDays" class="form-control" /><span asp-validation-for="ConsentLifetimeDays" class="text-danger"></span></div>
+    <fieldset class="mb-3">
+        <legend class="h6">Allowed scopes</legend>
+        @foreach (var scope in Model.AvailableScopes)
+        {
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="AllowedScopes" value="@scope" id="scope-@scope" checked="@Model.AllowedScopes.Contains(scope)" />
+                <label class="form-check-label" for="scope-@scope">@scope</label>
+            </div>
+        }
+    </fieldset>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cerberus</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Cerberus</a>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Administration</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Account" asp-action="Manage">My account</a></li>
+                    </ul>
+                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-flex">
+                        <span class="navbar-text me-3">@User.Identity.Name</span>
+                        <button type="submit" class="btn btn-outline-light btn-sm">Sign out</button>
+                    </form>
+                }
+            </div>
+        </nav>
+    </header>
+    <main class="container pb-5">
+        <partial name="_Toast" />
+        @RenderBody()
+    </main>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

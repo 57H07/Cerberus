@@ -1,0 +1,81 @@
+# Local development stack. Secrets come from the .env file (copy .env.example, never commit .env).
+# Prerequisite: export the ASP.NET Core development certificate to ./certs/cerberus-dev.pfx (see docs/08-deploiement.md).
+name: cerberus
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SQL_SA_PASSWORD:?Set SQL_SA_PASSWORD in .env}
+    ports:
+      - "14333:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" -b -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+
+  cerberus-web:
+    build:
+      context: .
+      dockerfile: Cerberus.Web/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    ports:
+      - "5001:8443"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:8443
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/cerberus-dev.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${DEV_CERT_PASSWORD:?Set DEV_CERT_PASSWORD in .env}
+      ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=Cerberus;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=true
+      Database__MigrateOnStartup: "true"
+      Oidc__Issuer: https://localhost:5001/
+      Email__Smtp__Host: mailpit
+      Email__Smtp__Port: "1025"
+      Email__Smtp__UseStartTls: "false"
+      Bootstrap__AdminEmail: ${BOOTSTRAP_ADMIN_EMAIL:-admin@cerberus.local}
+      Bootstrap__AdminUserName: ${BOOTSTRAP_ADMIN_USERNAME:-admin}
+      Bootstrap__AdminPassword: ${BOOTSTRAP_ADMIN_PASSWORD:?Set BOOTSTRAP_ADMIN_PASSWORD in .env}
+      Seed__Enabled: "true"
+      Seed__DemoUserPassword: ${DEMO_USER_PASSWORD:?Set DEMO_USER_PASSWORD in .env}
+      Seed__DemoClientSecret: ${DEMO_CLIENT_SECRET:?Set DEMO_CLIENT_SECRET in .env}
+      Seed__DemoClientBaseUrl: https://localhost:5003
+    volumes:
+      - ./certs:/https:ro
+
+  demo-client:
+    build:
+      context: .
+      dockerfile: Cerberus.DemoClient/Dockerfile
+    depends_on:
+      - cerberus-web
+    ports:
+      - "5003:8443"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:8443
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/cerberus-dev.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${DEV_CERT_PASSWORD}
+      Oidc__Authority: https://localhost:5001/
+      Oidc__BackchannelAuthority: https://cerberus-web:8443/
+      Oidc__BackchannelTrustedCertificatePath: /https/cerberus-dev.pfx
+      Oidc__BackchannelTrustedCertificatePassword: ${DEV_CERT_PASSWORD}
+      Oidc__ClientId: demo-client
+      Oidc__ClientSecret: ${DEMO_CLIENT_SECRET}
+      Api__BaseAddress: https://localhost:8443
+    volumes:
+      - ./certs:/https:ro
+
+volumes:
+  sqldata:

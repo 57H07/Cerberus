@@ -1,0 +1,26 @@
+@model OrganizationRolesViewModel
+@{
+    ViewData["Title"] = "Roles - " + Model.Organization.Name;
+}
+<partial name="_OrgNav" model="Model.Organization" />
+<a class="btn btn-primary mb-3" asp-action="Create" asp-route-organizationId="@Model.Organization.Id">New role</a>
+<table class="table">
+    <thead><tr><th>Name</th><th>Permissions</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var role in Model.Roles)
+        {
+            <tr>
+                <td>@role.Name @(role.IsSystem ? "(system)" : "")<br /><small class="text-muted">@role.Description</small></td>
+                <td><small>@string.Join(", ", role.Permissions)</small></td>
+                <td class="text-nowrap">
+                    @if (!role.IsSystem)
+                    {
+                        <a asp-action="Edit" asp-route-organizationId="@Model.Organization.Id" asp-route-id="@role.Id">edit</a>
+                        <form asp-action="Delete" asp-route-organizationId="@Model.Organization.Id" asp-route-id="@role.Id" method="post"><button class="btn btn-link btn-sm text-danger">delete</button></form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<p class="text-muted">These roles only apply to the identity provider administration and to the <code>org_roles</code> claim. Business permissions stay managed by each application.</p>

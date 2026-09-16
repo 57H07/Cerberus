@@ -1,0 +1,23 @@
+@model OrganizationApplicationsViewModel
+@{
+    ViewData["Title"] = "Applications - " + Model.Organization.Name;
+}
+<partial name="_OrgNav" model="Model.Organization" />
+<table class="table">
+    <thead><tr><th>Application</th><th>Access</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var application in Model.Applications)
+        {
+            <tr>
+                <td>@application.Name @(application.IsOwner ? "(owned)" : "")<br /><small class="text-muted">@application.Description</small></td>
+                <td>@(application.IsEnabled ? "enabled" : "disabled") @(application.IsApplicationActive ? "" : "- disabled by the platform")</td>
+                <td>
+                    <form asp-action="SetEnabled" asp-route-organizationId="@Model.Organization.Id" asp-route-id="@application.ApplicationId" method="post">
+                        <input type="hidden" name="enabled" value="@(!application.IsEnabled)" />
+                        <button class="btn btn-sm btn-outline-secondary">@(application.IsEnabled ? "Disable for my organization" : "Enable")</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

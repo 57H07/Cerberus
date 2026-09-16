@@ -1,0 +1,22 @@
+@model IReadOnlyList<RoleDto>
+@{
+    ViewData["Title"] = "Platform roles";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Platform roles</h1>
+    <a class="btn btn-primary" asp-action="Create">New role</a>
+</div>
+<table class="table">
+    <thead><tr><th>Name</th><th>Permissions</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var role in Model)
+        {
+            <tr>
+                <td>@role.Name @(role.IsSystem ? "(system)" : "")</td>
+                <td><small>@string.Join(", ", role.Permissions)</small></td>
+                <td>@if (!role.IsSystem) { <a asp-action="Edit" asp-route-id="@role.Id">edit</a> }</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<p class="text-muted">Assign platform roles from the user details page.</p>

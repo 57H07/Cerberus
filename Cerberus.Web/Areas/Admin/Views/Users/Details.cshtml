@@ -1,0 +1,52 @@
+@model UserDetailsViewModel
+@{
+    var user = Model.Details.User;
+    ViewData["Title"] = user.UserName;
+}
+<h1>@user.FirstName @user.LastName <small class="text-muted">@user.UserName</small></h1>
+<p>
+    @user.Email @(user.EmailConfirmed ? "(confirmed)" : "(not confirmed)") -
+    <strong>@user.Status</strong> @(Model.Details.IsLockedOut ? "- locked out" : "")
+</p>
+<div class="d-flex gap-2 mb-4">
+    <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+    @if (user.Status == Cerberus.Domain.Users.UserStatus.Active)
+    {
+        <form asp-action="Disable" asp-route-id="@user.Id" method="post"><button class="btn btn-outline-danger">Disable</button></form>
+    }
+    else
+    {
+        <form asp-action="Enable" asp-route-id="@user.Id" method="post"><button class="btn btn-outline-success">Enable</button></form>
+    }
+</div>
+
+<h2 class="h4">Platform roles</h2>
+<ul>
+    @foreach (var role in Model.Details.PlatformRoles)
+    {
+        <li>
+            @role.RoleName
+            <form asp-action="UnassignRole" asp-route-id="@user.Id" method="post" class="d-inline">
+                <input type="hidden" name="assignmentId" value="@role.AssignmentId" />
+                <button class="btn btn-link btn-sm text-danger">remove</button>
+            </form>
+        </li>
+    }
+</ul>
+<form asp-action="AssignRole" asp-route-id="@user.Id" method="post" class="d-flex gap-2 mb-4">
+    <select name="roleId" class="form-select">
+        @foreach (var role in Model.PlatformRoles)
+        {
+            <option value="@role.Id">@role.Name</option>
+        }
+    </select>
+    <button class="btn btn-outline-primary">Assign</button>
+</form>
+
+<h2 class="h4">Organizations</h2>
+<ul>
+    @foreach (var membership in Model.Details.Memberships)
+    {
+        <li><a asp-controller="Organizations" asp-action="Details" asp-route-id="@membership.OrganizationId">@membership.OrganizationName</a> (@membership.Status)</li>
+    }
+</ul>

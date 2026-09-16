@@ -1,0 +1,21 @@
+@model IReadOnlyList<ApplicationDto>
+@{
+    ViewData["Title"] = "Applications";
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Applications</h1>
+    <a class="btn btn-primary" asp-action="Create">New application</a>
+</div>
+<table class="table table-hover">
+    <thead><tr><th>Name</th><th>Organizations</th><th>Status</th></tr></thead>
+    <tbody>
+        @foreach (var application in Model)
+        {
+            <tr>
+                <td><a asp-action="Details" asp-route-id="@application.Id">@application.Name</a></td>
+                <td>@string.Join(", ", application.Organizations.Select(o => o.OrganizationName))</td>
+                <td>@(application.IsActive ? "Active" : "Disabled")</td>
+            </tr>
+        }
+    </tbody>
+</table>

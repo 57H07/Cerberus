@@ -1,0 +1,42 @@
+@{
+    ViewData["Title"] = "Home";
+    var accessClaims = (IReadOnlyList<KeyValuePair<string, string>>)ViewData["AccessTokenClaims"]!;
+    var organizationId = User.FindFirst("org_id")?.Value;
+}
+<h1>Signed in</h1>
+<p>Organization validated by Cerberus: <strong>@User.FindFirst("org_slug")?.Value</strong> (<code>@organizationId</code>)</p>
+@if (TempData["ApiResult"] is string apiResult)
+{
+    <div class="alert alert-info"><strong>API:</strong> <code>@apiResult</code></div>
+}
+<div class="d-flex gap-2 mb-4">
+    <form asp-action="CallApi" method="post">
+        <input type="hidden" name="organizationId" value="@organizationId" />
+        <button class="btn btn-primary">Call the API for my organization</button>
+    </form>
+    <form asp-action="CallApi" method="post">
+        <input type="hidden" name="organizationId" value="@Guid.NewGuid()" />
+        <button class="btn btn-outline-danger">Call the API for another organization (403)</button>
+    </form>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h2 class="h5">ID token / session claims</h2>
+        <table class="table table-sm">
+            @foreach (var claim in User.Claims)
+            {
+                <tr><td><code>@claim.Type</code></td><td class="text-break">@claim.Value</td></tr>
+            }
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h2 class="h5">Access token claims</h2>
+        <table class="table table-sm">
+            @foreach (var claim in accessClaims)
+            {
+                <tr><td><code>@claim.Key</code></td><td class="text-break">@claim.Value</td></tr>
+            }
+        </table>
+        <p>Expires at: @ViewData["ExpiresAt"] - refresh token: @ViewData["HasRefreshToken"]</p>
+    </div>
+</div>

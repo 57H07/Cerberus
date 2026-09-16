@@ -1,0 +1,11 @@
+@{
+    ViewData["Title"] = "Welcome";
+}
+<h1>Demo portal</h1>
+<p>This application delegates authentication to Cerberus (authorization code + PKCE).</p>
+<div class="d-flex gap-2">
+    <a class="btn btn-primary" asp-action="Login">Sign in (choose organization at Cerberus)</a>
+    <a class="btn btn-outline-primary" asp-action="Login" asp-route-organization="acme">Sign in for acme</a>
+    <a class="btn btn-outline-primary" asp-action="Login" asp-route-organization="globex">Sign in for globex</a>
+    <a class="btn btn-outline-secondary" asp-action="Login" asp-route-organization="initech">Sign in for initech (not granted)</a>
+</div>

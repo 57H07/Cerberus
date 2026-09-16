@@ -1,0 +1,16 @@
+html {
+    font-size: 15px;
+}
+
+.auth-card {
+    max-width: 440px;
+    margin: 2rem auto;
+}
+
+.scope-list li {
+    margin-bottom: .5rem;
+}
+
+.table td form {
+    display: inline;
+}

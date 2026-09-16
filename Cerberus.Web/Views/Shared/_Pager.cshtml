@@ -1,0 +1,14 @@
+@model (int Page, int TotalPages, string? Search)
+@if (Model.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @for (var i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    <a class="page-link" asp-route-page="@i" asp-route-search="@Model.Search">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

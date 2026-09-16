@@ -1,0 +1,69 @@
+@model ApplicationDetailsViewModel
+@{
+    var application = Model.Application;
+    ViewData["Title"] = application.Name;
+}
+<h1>@application.Name</h1>
+<p>@application.Description</p>
+<form asp-action="SetActive" asp-route-id="@application.Id" method="post" class="mb-4">
+    <input type="hidden" name="active" value="@(!application.IsActive)" />
+    <span class="me-2">Status: <strong>@(application.IsActive ? "Active" : "Disabled")</strong></span>
+    <button class="btn btn-sm @(application.IsActive ? "btn-outline-danger" : "btn-outline-success")">@(application.IsActive ? "Disable" : "Enable")</button>
+</form>
+
+<h2 class="h4">Organizations allowed to use the application</h2>
+<table class="table table-sm">
+    <tbody>
+        @foreach (var access in application.Organizations)
+        {
+            <tr>
+                <td>@access.OrganizationName @(access.IsOwner ? "(owner)" : "")</td>
+                <td>@(access.IsEnabled ? "enabled" : "disabled by the organization")</td>
+                <td>
+                    @if (!access.IsOwner)
+                    {
+                        <form asp-action="RemoveOrganization" asp-route-id="@application.Id" method="post">
+                            <input type="hidden" name="organizationId" value="@access.OrganizationId" />
+                            <button class="btn btn-link btn-sm text-danger">remove</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<form asp-action="GrantOrganization" asp-route-id="@application.Id" method="post" class="d-flex gap-2 mb-4">
+    <input name="slug" class="form-control" placeholder="Organization slug" />
+    <button class="btn btn-outline-primary">Grant</button>
+</form>
+
+<div class="d-flex justify-content-between align-items-center">
+    <h2 class="h4">OIDC clients</h2>
+    <a class="btn btn-sm btn-primary" asp-action="CreateClient" asp-route-id="@application.Id">New client</a>
+</div>
+<table class="table table-sm">
+    <thead><tr><th>Client ID</th><th>Type</th><th>Consent</th><th>Redirect URIs</th><th>Scopes</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+        @foreach (var client in Model.Clients)
+        {
+            <tr>
+                <td><a asp-action="EditClient" asp-route-id="@client.Id"><code>@client.ClientId</code></a></td>
+                <td>@client.ClientType</td>
+                <td>@client.ConsentPolicy</td>
+                <td><small>@string.Join(" ", client.RedirectUris)</small></td>
+                <td><small>@string.Join(" ", client.AllowedScopes)</small></td>
+                <td>@(client.IsActive ? "Active" : "Disabled")</td>
+                <td class="text-nowrap">
+                    @if (client.ClientType == ClientType.Confidential)
+                    {
+                        <form asp-action="RotateSecret" asp-route-id="@client.Id" method="post"><button class="btn btn-link btn-sm">rotate secret</button></form>
+                    }
+                    <form asp-action="SetClientActive" asp-route-id="@client.Id" method="post">
+                        <input type="hidden" name="active" value="@(!client.IsActive)" />
+                        <button class="btn btn-link btn-sm @(client.IsActive ? "text-danger" : "")">@(client.IsActive ? "disable" : "enable")</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

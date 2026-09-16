@@ -1,0 +1,27 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+.idea/
+TestResults/
+*.trx
+coverage*/
+
+## Secrets & local runtime data (never commit)
+.env
+*.pfx
+*.pem
+*.key
+secrets/
+dpkeys/
+certs/
+
+## OS
+Thumbs.db
+.DS_Store
+
+## Sass output / node
+node_modules/

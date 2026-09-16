@@ -1,0 +1,9 @@
+@model OrganizationDto
+<h1>@Model.Name <small class="text-muted"><code>@Model.Slug</code></small></h1>
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link" asp-area="OrgAdmin" asp-controller="Organization" asp-action="Index" asp-route-organizationId="@Model.Id">Overview</a></li>
+    <li class="nav-item"><a class="nav-link" asp-area="OrgAdmin" asp-controller="Members" asp-action="Index" asp-route-organizationId="@Model.Id">Members</a></li>
+    <li class="nav-item"><a class="nav-link" asp-area="OrgAdmin" asp-controller="Roles" asp-action="Index" asp-route-organizationId="@Model.Id">Roles</a></li>
+    <li class="nav-item"><a class="nav-link" asp-area="OrgAdmin" asp-controller="Applications" asp-action="Index" asp-route-organizationId="@Model.Id">Applications</a></li>
+    <li class="nav-item"><a class="nav-link" asp-area="OrgAdmin" asp-controller="Organization" asp-action="Audit" asp-route-organizationId="@Model.Id">Audit</a></li>
+</ul>

@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Email confirmation";
+    var succeeded = ViewData["Succeeded"] as bool? == true;
+}
+<div class="card auth-card">
+    <div class="card-body">
+        @if (succeeded)
+        {
+            <h1 class="h4">Email address confirmed</h1>
+            <p>Thank you.</p>
+        }
+        else
+        {
+            <h1 class="h4 text-danger">Invalid link</h1>
+            <p>The confirmation link is invalid or has expired.</p>
+        }
+        <a asp-action="Login">Sign in</a>
+    </div>
+</div>

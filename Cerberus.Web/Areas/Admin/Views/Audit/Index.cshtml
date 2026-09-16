@@ -1,0 +1,14 @@
+@model AuditViewModel
+@{
+    ViewData["Title"] = "Audit log";
+}
+<h1>Audit log</h1>
+<form method="get" class="mb-3 d-flex gap-2">
+    <input name="prefix" value="@Model.ActionPrefix" class="form-control" placeholder="Action prefix (auth., oidc., admin., org., authz.)" />
+    <button class="btn btn-outline-secondary">Filter</button>
+</form>
+<partial name="_AuditTable" model="Model.Page.Items" />
+@if (Model.Page.HasNext)
+{
+    <a asp-route-page="@(Model.Page.Page + 1)" asp-route-prefix="@Model.ActionPrefix">Older entries</a>
+}

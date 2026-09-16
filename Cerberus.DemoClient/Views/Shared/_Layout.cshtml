@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Demo portal</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">Demo portal</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-controller="Home" asp-action="Logout" method="post">
+                    <span class="navbar-text text-white me-3">@User.Identity.Name</span>
+                    <button class="btn btn-sm btn-light">Sign out</button>
+                </form>
+            }
+        </div>
+    </nav>
+    <main class="container">@RenderBody()</main>
+</body>
+</html>

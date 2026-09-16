@@ -1,0 +1,76 @@
+@model MembersViewModel
+@{
+    ViewData["Title"] = "Members - " + Model.Organization.Name;
+    var organizationId = Model.Organization.Id;
+}
+<partial name="_OrgNav" model="Model.Organization" />
+<table class="table">
+    <thead><tr><th>Member</th><th>Status</th><th>Roles</th><th>Actions</th></tr></thead>
+    <tbody>
+        @foreach (var member in Model.Members)
+        {
+            <tr>
+                <td>@member.FullName<br /><small class="text-muted">@member.UserName - @member.Email</small></td>
+                <td>@member.Status @(member.UserStatus == Cerberus.Domain.Users.UserStatus.Disabled ? "(account disabled)" : "")</td>
+                <td>
+                    @foreach (var role in member.Roles)
+                    {
+                        <form asp-action="UnassignRole" asp-route-organizationId="@organizationId" asp-route-id="@role.AssignmentId" method="post" class="d-inline">
+                            <span class="badge bg-secondary">@role.RoleName</span>
+                            <button class="btn btn-link btn-sm text-danger p-0">x</button>
+                        </form>
+                    }
+                    <form asp-action="AssignRole" asp-route-organizationId="@organizationId" asp-route-id="@member.UserId" method="post" class="d-flex gap-1 mt-1">
+                        <select name="roleId" class="form-select form-select-sm">
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role.Id">@role.Name</option>
+                            }
+                        </select>
+                        <button class="btn btn-sm btn-outline-primary">Assign</button>
+                    </form>
+                </td>
+                <td class="text-nowrap">
+                    @if (member.Status == Cerberus.Domain.Organizations.MembershipStatus.Active)
+                    {
+                        <form asp-action="Suspend" asp-route-organizationId="@organizationId" asp-route-id="@member.UserId" method="post"><button class="btn btn-link btn-sm">suspend</button></form>
+                    }
+                    else
+                    {
+                        <form asp-action="Resume" asp-route-organizationId="@organizationId" asp-route-id="@member.UserId" method="post"><button class="btn btn-link btn-sm">resume</button></form>
+                    }
+                    <form asp-action="Remove" asp-route-organizationId="@organizationId" asp-route-id="@member.UserId" method="post"><button class="btn btn-link btn-sm text-danger">remove</button></form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.Invitations is not null)
+{
+    <h2 class="h4 mt-4">Invitations</h2>
+    <form asp-action="Invite" asp-route-organizationId="@organizationId" method="post" class="d-flex gap-2 mb-3 col-md-6">
+        <input name="email" type="email" class="form-control" placeholder="Email address" />
+        <button class="btn btn-primary">Invite</button>
+    </form>
+    <table class="table table-sm">
+        <thead><tr><th>Email</th><th>Sent</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var invitation in Model.Invitations)
+            {
+                var status = invitation.AcceptedAt is not null ? "accepted" : invitation.RevokedAt is not null ? "revoked" : invitation.ExpiresAt < DateTime.UtcNow ? "expired" : "pending";
+                <tr>
+                    <td>@invitation.Email</td>
+                    <td>@invitation.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>@status</td>
+                    <td>
+                        @if (status == "pending")
+                        {
+                            <form asp-action="RevokeInvitation" asp-route-organizationId="@organizationId" asp-route-id="@invitation.Id" method="post"><button class="btn btn-link btn-sm text-danger">revoke</button></form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/tests/">
+    <Project Path="tests/Cerberus.Application.Tests/Cerberus.Application.Tests.csproj" />
+    <Project Path="tests/Cerberus.ArchitectureTests/Cerberus.ArchitectureTests.csproj" />
+    <Project Path="tests/Cerberus.Domain.Tests/Cerberus.Domain.Tests.csproj" />
+    <Project Path="tests/Cerberus.IntegrationTests/Cerberus.IntegrationTests.csproj" />
+  </Folder>
+  <Project Path="Cerberus.Application/Cerberus.Application.csproj" />
+  <Project Path="Cerberus.DemoClient/Cerberus.DemoClient.csproj" />
+  <Project Path="Cerberus.Domain/Cerberus.Domain.csproj" />
+  <Project Path="Cerberus.Infrastructure/Cerberus.Infrastructure.csproj" />
+  <Project Path="Cerberus.Web/Cerberus.Web.csproj" />
+</Solution>

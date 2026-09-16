@@ -1,0 +1,45 @@
+@model OrganizationDetailsViewModel
+@{
+    var organization = Model.Organization;
+    ViewData["Title"] = organization.Name;
+}
+<h1>@organization.Name <small class="text-muted"><code>@organization.Slug</code></small></h1>
+<p>Status: <strong>@organization.Status</strong></p>
+<div class="d-flex gap-2 mb-4">
+    <form asp-action="Rename" asp-route-id="@organization.Id" method="post" class="d-flex gap-2">
+        <input name="name" value="@organization.Name" class="form-control" />
+        <button class="btn btn-outline-primary">Rename</button>
+    </form>
+    @if (organization.Status == Cerberus.Domain.Organizations.OrganizationStatus.Active)
+    {
+        <form asp-action="Suspend" asp-route-id="@organization.Id" method="post"><button class="btn btn-outline-danger">Suspend</button></form>
+    }
+    else
+    {
+        <form asp-action="Activate" asp-route-id="@organization.Id" method="post"><button class="btn btn-outline-success">Activate</button></form>
+    }
+</div>
+
+<h2 class="h4">Organization administrators</h2>
+<table class="table table-sm">
+    <tbody>
+        @foreach (var administrator in Model.Administrators)
+        {
+            <tr>
+                <td>@administrator.FullName</td>
+                <td>@administrator.UserName</td>
+                <td>@administrator.Status</td>
+                <td>
+                    <form asp-action="RemoveAdministrator" asp-route-id="@organization.Id" method="post">
+                        <input type="hidden" name="userId" value="@administrator.UserId" />
+                        <button class="btn btn-link btn-sm text-danger">remove</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<form asp-action="AddAdministrator" asp-route-id="@organization.Id" method="post" class="d-flex gap-2">
+    <input name="login" class="form-control" placeholder="Login or email of an existing user" />
+    <button class="btn btn-outline-primary">Add administrator</button>
+</form>

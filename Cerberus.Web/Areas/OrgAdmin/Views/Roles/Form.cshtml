@@ -1,0 +1,6 @@
+@model RoleFormViewModel
+@{
+    ViewData["Title"] = Model.Id is null ? "New organization role" : "Edit organization role";
+}
+<h1>@ViewData["Title"]</h1>
+<partial name="_RoleForm" model="Model" />

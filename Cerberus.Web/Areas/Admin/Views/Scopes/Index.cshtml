@@ -1,0 +1,35 @@
+@model IReadOnlyList<ApiScopeDto>
+@{
+    ViewData["Title"] = "API scopes";
+}
+<h1>API scopes</h1>
+<p>Standard scopes (<code>openid profile email offline_access org.roles</code>) are built in. Requesting an API scope adds its resource to the access token audience.</p>
+<table class="table">
+    <thead><tr><th>Name</th><th>Resource</th><th>Display name / description</th></tr></thead>
+    <tbody>
+        @foreach (var scope in Model)
+        {
+            <tr>
+                <td><code>@scope.Name</code></td>
+                <td><code>@scope.Resource</code></td>
+                <td>
+                    <form asp-action="Edit" asp-route-id="@scope.Id" method="post" class="d-flex gap-2">
+                        <input type="hidden" name="Name" value="@scope.Name" />
+                        <input type="hidden" name="Resource" value="@scope.Resource" />
+                        <input name="DisplayName" value="@scope.DisplayName" class="form-control form-control-sm" />
+                        <input name="Description" value="@scope.Description" class="form-control form-control-sm" />
+                        <button class="btn btn-sm btn-outline-primary">Save</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<h2 class="h5">New scope</h2>
+<form asp-action="Create" method="post" class="row g-2">
+    <div class="col-md-3"><input name="Name" class="form-control" placeholder="name (e.g. crm_api)" /></div>
+    <div class="col-md-3"><input name="Resource" class="form-control" placeholder="resource (e.g. crm-api)" /></div>
+    <div class="col-md-2"><input name="DisplayName" class="form-control" placeholder="Display name" /></div>
+    <div class="col-md-3"><input name="Description" class="form-control" placeholder="Description" /></div>
+    <div class="col-md-1"><button class="btn btn-primary w-100">Add</button></div>
+</form>
